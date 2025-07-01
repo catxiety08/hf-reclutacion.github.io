@@ -1,0 +1,118 @@
+
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+
+export default function HomePage() {
+  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
+  const [registerForm, setRegisterForm] = useState({ name: "", email: "", password: "" });
+  const [jobForm, setJobForm] = useState({ title: "", description: "", location: "" });
+  const [postedJobs, setPostedJobs] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleLogin = () => {
+    console.log("Iniciar sesión con:", loginForm);
+  };
+
+  const handleRegister = () => {
+    console.log("Registrar con:", registerForm);
+  };
+
+  const handleJobPost = () => {
+    const newJob = { ...jobForm };
+    setPostedJobs([...postedJobs, newJob]);
+    setJobForm({ title: "", description: "", location: "" });
+  };
+
+  const filteredJobs = postedJobs.filter(
+    (job) =>
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.location.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  return (
+    <div className="min-h-screen bg-white text-gray-800">
+      <header className="bg-[#1F3B73] text-white p-6 shadow-md">
+        <h1 className="text-3xl font-bold">HF Reclutación</h1>
+        <p className="text-lg mt-2">Conectamos talento con oportunidades reales</p>
+      </header>
+
+      <main className="p-6 grid gap-6 md:grid-cols-2">
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-4">¿Estás buscando talento?</h2>
+            <p className="mb-4">Publica tus ofertas laborales y encuentra al candidato ideal.</p>
+            <Button className="bg-[#1F3B73] text-white hover:bg-[#16305c]">Publicar trabajo</Button>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-lg">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold mb-4">¿Buscas empleo?</h2>
+            <p className="mb-4">Explora nuestras ofertas y encuentra tu próximo trabajo.</p>
+            <Button className="bg-[#1F3B73] text-white hover:bg-[#16305c]">Buscar empleo</Button>
+          </CardContent>
+        </Card>
+
+        <Card className="rounded-2xl shadow-lg col-span-2">
+          <CardContent className="p-6">
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="mb-4">
+                <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
+                <TabsTrigger value="register">Registrarse</TabsTrigger>
+                <TabsTrigger value="post">Publicar Trabajo</TabsTrigger>
+                <TabsTrigger value="jobs">Ver Ofertas</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="login">
+                <Input className="mb-3" placeholder="Correo electrónico" type="email" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} />
+                <Input className="mb-3" placeholder="Contraseña" type="password" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} />
+                <Button className="bg-[#1F3B73] text-white hover:bg-[#16305c]" onClick={handleLogin}>Iniciar sesión</Button>
+              </TabsContent>
+
+              <TabsContent value="register">
+                <Input className="mb-3" placeholder="Nombre completo" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} />
+                <Input className="mb-3" placeholder="Correo electrónico" type="email" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} />
+                <Input className="mb-3" placeholder="Contraseña" type="password" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} />
+                <Button className="bg-[#1F3B73] text-white hover:bg-[#16305c]" onClick={handleRegister}>Registrarse</Button>
+              </TabsContent>
+
+              <TabsContent value="post">
+                <Input className="mb-3" placeholder="Título del puesto" value={jobForm.title} onChange={(e) => setJobForm({ ...jobForm, title: e.target.value })} />
+                <Textarea className="mb-3" placeholder="Descripción del trabajo" value={jobForm.description} onChange={(e) => setJobForm({ ...jobForm, description: e.target.value })} />
+                <Input className="mb-3" placeholder="Ubicación" value={jobForm.location} onChange={(e) => setJobForm({ ...jobForm, location: e.target.value })} />
+                <Button className="bg-[#1F3B73] text-white hover:bg-[#16305c]" onClick={handleJobPost}>Publicar Oferta</Button>
+              </TabsContent>
+
+              <TabsContent value="jobs">
+                <Input className="mb-4" placeholder="Buscar por título, descripción o ubicación" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+                <div className="space-y-4">
+                  {filteredJobs.length === 0 ? (
+                    <p className="text-gray-500">No hay ofertas que coincidan con tu búsqueda.</p>
+                  ) : (
+                    filteredJobs.map((job, index) => (
+                      <Card key={index} className="bg-gray-50 p-4">
+                        <h3 className="text-lg font-semibold">{job.title}</h3>
+                        <p className="text-sm text-gray-700">{job.description}</p>
+                        <p className="text-sm text-gray-500 mt-2">Ubicación: {job.location}</p>
+                        <Button className="mt-2 bg-[#1F3B73] text-white hover:bg-[#16305c]">Postular</Button>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </main>
+
+      <footer className="bg-gray-100 text-center text-sm py-4 mt-10 text-gray-600">
+        &copy; {new Date().getFullYear()} HF Reclutación. Todos los derechos reservados.
+      </footer>
+    </div>
+  );
+}
